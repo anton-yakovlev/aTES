@@ -1,0 +1,28 @@
+{
+  "name": "ates",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start-auth": "node src/auth/index.js",
+    "start-tracker": "node src/task_tracker/index.js",
+    "start-client": "NODE_ENV=development webpack serve --mode development"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "1.20.2",
+    "express": "4.18.3",
+    "install": "0.13.0",
+    "kafkajs": "2.2.4",
+    "node-oauth2-server": "2.4.0",
+    "npm": "10.5.0",
+    "pg": "8.11.3"
+  },
+  "devDependencies": {
+    "webpack": "5.90.3",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "5.0.2"
+  }
+}
