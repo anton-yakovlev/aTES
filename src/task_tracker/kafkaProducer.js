@@ -1,7 +1,7 @@
 const { Kafka } = require('kafkajs')
 
 const kafka = new Kafka({
-  clientId: 'popug-auth',
+  clientId: 'popug-tasks',
   brokers: ['localhost:9092'],
 })
 

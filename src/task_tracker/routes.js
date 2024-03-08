@@ -1,8 +1,7 @@
-module.exports = (router, app) => {
-  router.get("/create-task", authorise, createTask);
-  router.get("/assign-task", authorise, assignTask);
-  router.get("/close-task", authorise, closeTask);
-  router.get("/shuffle-tasks", authorise, shuffleTasks);
+module.exports = (router,  taskService) => {
+  router.post("/create-task", authorise, taskService.createTask);
+  router.post("/close-task", authorise, taskService.closeTask);
+  router.post("/shuffle-tasks", authorise, taskService.shuffleTasks);
 
   return router;
 };
@@ -10,20 +9,4 @@ module.exports = (router, app) => {
 function authorise (req, res, next) {
   console.log('authorise');
   next();
-}
-
-function createTask(query, res) {
-  res.send("createTask");
-}
-
-function closeTask(query, res) {
-  res.send("closeTask");
-}
-
-function assignTask(query, res) {
-  res.send("assignTask");
-}
-
-function shuffleTasks(query, res) {
-  res.send("shuffleTasks");
 }

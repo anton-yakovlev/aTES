@@ -17,7 +17,6 @@ function registerUser(req, res) {
       const message = error
         ? "Something went wrong!"
         : "This user already exists!";
-
       sendResponse(res, message, error);
 
       return;
@@ -44,7 +43,6 @@ function registerUser(req, res) {
       console.log({ event: JSON.stringify(event), topic: 'accounts-stream' });
 
       producer.call({ event, topic: 'accounts-stream'});
-
       // -------------------- End of CUD Produce event -------------------- //
     });
   });
@@ -70,7 +68,6 @@ function changeUser(req, res) {
         );
 
         // -------------------- Produce CUD event -------------------- //
-
         const cud_event = {
           eventName: 'AccountUpdated',
           data: {
@@ -84,12 +81,10 @@ function changeUser(req, res) {
         console.log({ event: JSON.stringify(cud_event), topic: 'accounts-stream'});
 
         producer.call({ event: cud_event, topic: 'accounts-stream' });
-
         // -------------------- End of CUD Produce event -------------------- //
 
         if (isNewPosition) {
           // -------------------- Produce BE event -------------------- //
-
           const be_event = {
             eventName: 'AccountPotionChanged',
             data: {
@@ -101,7 +96,6 @@ function changeUser(req, res) {
           console.log({ event: JSON.stringify(be_event), topic: 'accounts'});
 
           producer.call({ event: be_event, topic: 'accounts'});
-
           // -------------------- End of BE Produce event -------------------- //
         };
       });
@@ -118,7 +112,6 @@ function deleteUser(req, res) {
     );
 
     // -------------------- Produce CUD event -------------------- //
-
     const event = {
       eventName: 'AccountDeleted',
       data: {
@@ -129,7 +122,6 @@ function deleteUser(req, res) {
     console.log({ event: JSON.stringify(event), topic: 'accounts-stream'});
 
     producer.call({ event, topic: 'accounts-stream'});
-
     // -------------------- End of CUD Produce event -------------------- //
   });
 };

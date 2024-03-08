@@ -7,6 +7,8 @@ module.exports = (injectedPgPool) => {
     registerUser,
     updateUser,
     deleteUser,
+    getUserByPublicId,
+    getAllEmployees,
   };
 };
 
@@ -18,11 +20,25 @@ function registerUser(public_id, position, cbFunc) {
 }
 
 function updateUser(public_id, position, cbFunc) {
-  const query = `UPDATE users SET position = '${position}' WHERE public_id = ${public_id} RETURNING *`;
+  const query = `UPDATE users SET position = '${position}' WHERE public_id = '${public_id}' RETURNING *`;
   pgPool.query(query, cbFunc);
 }
 
-function deleteUser(userId, cbFunc) {
-  const query = `DELETE from users WHERE id = ${userId} RETURNING *`;
+function deleteUser(public_id, cbFunc) {
+  const query = `DELETE from users WHERE public_id = '${public_id}' RETURNING *`;
   pgPool.query(query, cbFunc);
+}
+
+function getUserByPublicId(public_id, cbFunc) {
+  const getUserQuery = `SELECT * FROM users WHERE public_id = '${public_id}'`;
+  pgPool.query(getUserQuery, (response) => {
+    cbFunc(response);
+  });
+}
+
+function getAllEmployees(cbFunc) {
+  const getUserQuery = `SELECT * FROM users WHERE position = 'employee'`;
+  pgPool.query(getUserQuery, (response) => {
+    cbFunc(response);
+  });
 }

@@ -1,14 +1,16 @@
 // Database imports
 const pgPool = require("./db/pgWrapper.js");
 const userDB = require("./db/userDB.js")(pgPool);
+const taskDB = require("./db/taskDB.js")(pgPool);
 
 // Express
 const express = require("express");
 const app = express();
 
 // Auth and routes
-const userUpdator = require("./userUpdator.js")(userDB);
-const routes = require("./routes.js")(express.Router(), app, userUpdator);
+const userService = require("./userService.js")(userDB);
+const taskService = require("./taskService.js")(taskDB, userDB);
+const routes = require("./routes.js")(express.Router(), taskService);
 
 // Kafka
 const { Kafka } = require('kafkajs')
@@ -23,7 +25,7 @@ const consumerAccounts = kafka.consumer({ groupId: 'accounts-group' });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/task-tracker", routes);
+app.use(routes);
 
 const port = 3001;
 
@@ -48,18 +50,16 @@ app.listen(port, async () => {
 
       if (messageObj.eventName === 'AccountCreated') {
         const {public_id, position} = messageObj.data;
-
-        userUpdator.registerUser(public_id, position);
+        userService.registerUser(public_id, position);
       }
 
       if (messageObj.eventName === 'AccountDeleted') {
-        userUpdator.deleteUser(messageObj.data.public_id);
+        userService.deleteUser(messageObj.data.public_id);
       }
 
       if (messageObj.eventName === 'AccountUpdated') {
         const {public_id, position} = messageObj.data;
-
-        userUpdator.updateUser(public_id, position);
+        userService.updateUser(public_id, position);
       }
     },
   });
