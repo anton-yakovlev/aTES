@@ -33,13 +33,13 @@ function registerUser(req, res) {
       const event = {
         eventName: 'AccountCreated',
         data: {
-          public_id: response.results.rows[0].public_id,
+          publicId: response.results.rows[0].public_id,
           email: response.results.rows[0].email,
           fullname: response.results.rows[0].fullname,
           position: response.results.rows[0].position,
         }
       }
-
+      
       console.log({ event: JSON.stringify(event), topic: 'accounts-stream' });
 
       producer.call({ event, topic: 'accounts-stream'});
@@ -71,7 +71,7 @@ function changeUser(req, res) {
         const cud_event = {
           eventName: 'AccountUpdated',
           data: {
-            public_id: response.results.rows[0].public_id,
+            publicId: response.results.rows[0].public_id,
             email: response.results.rows[0].email,
             fullname: response.results.rows[0].fullname,
             position: response.results.rows[0].position,
@@ -88,8 +88,8 @@ function changeUser(req, res) {
           const be_event = {
             eventName: 'AccountPotionChanged',
             data: {
-                public_id: response.results.rows[0].public_id,
-                position: response.results.rows[0].position,
+              publicId: response.results.rows[0].public_id,
+              position: response.results.rows[0].position,
             }
           };
 
@@ -115,7 +115,7 @@ function deleteUser(req, res) {
     const event = {
       eventName: 'AccountDeleted',
       data: {
-        public_id: response.results.rows[0].public_id,
+        publicId: response.results.rows[0].public_id,
       }
     }
 

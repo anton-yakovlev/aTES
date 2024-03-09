@@ -10,14 +10,14 @@ module.exports = (injectedUserDB) => {
   };
 };
 
-function registerUser(public_id, position) {
-  userDB.registerUser(public_id, position);
+function registerUser(public_id, position, cbFunc) {
+  userDB.registerUser(public_id, position, cbFunc);
 }
 
-function deleteUser(public_id) {
-  userDB.deleteUser(public_id);
+function deleteUser(public_id, cbFunc) {
+  userDB.deleteUser(public_id, cbFunc);
 };
 
-function updateUser(public_id, position) {
-  userDB.updateUser(public_id, position);
+function updateUser(public_id, position, cbFunc) {
+  userDB.updateUser(public_id, position, cbFunc);
 };

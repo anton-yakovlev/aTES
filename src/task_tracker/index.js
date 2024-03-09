@@ -1,3 +1,6 @@
+const protobuf = require('protobufjs');
+let AccountProtobufType;
+
 // Database imports
 const pgPool = require("./db/pgWrapper.js");
 const userDB = require("./db/userDB.js")(pgPool);
@@ -32,6 +35,10 @@ const port = 3001;
 app.listen(port, async () => {
   console.log(`Task tracker. Listening on port ${port}`);
 
+  protobuf.load('src/schemas_packages/popug.proto').then((root) => {
+    AccountProtobufType = root.lookupType('popug_package.Account');
+  });
+
   await consumerAccountsStream.connect();
   await consumerAccounts.connect();
 
@@ -46,20 +53,21 @@ app.listen(port, async () => {
         value: message.value.toString(),
       });
 
-      const messageObj = JSON.parse(message.value);
+      const decodedEvent = AccountProtobufType.decode(message.value);
 
-      if (messageObj.eventName === 'AccountCreated') {
-        const {public_id, position} = messageObj.data;
-        userService.registerUser(public_id, position);
+      if (decodedEvent.eventName === 'AccountCreated') {
+        const { publicId, position } = decodedEvent.data;
+        userService.registerUser(publicId, position, () => {});
       }
 
-      if (messageObj.eventName === 'AccountDeleted') {
-        userService.deleteUser(messageObj.data.public_id);
+      if (decodedEvent.eventName === 'AccountDeleted') {
+        const { publicId } = decodedEvent.data;
+        userService.deleteUser(publicId, () => {});
       }
 
-      if (messageObj.eventName === 'AccountUpdated') {
-        const {public_id, position} = messageObj.data;
-        userService.updateUser(public_id, position);
+      if (decodedEvent.eventName === 'AccountUpdated') {
+        const {publicId, position} = decodedEvent.data;
+        userService.updateUser(publicId, position, () => {});
       }
     },
   });

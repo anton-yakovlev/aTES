@@ -27,9 +27,9 @@ function createTask(req, res) {
       const be_event = {
         eventName: 'TaskCreated',
         data: {
-          public_id: result.results.rows[0].public_id,
+          publicId: result.results.rows[0].public_id,
           description: result.results.rows[0].description,
-          assigned_public_account_id: result.results.rows[0].assigned_public_account_id,
+          assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,
         }
       }
 
@@ -42,9 +42,9 @@ function createTask(req, res) {
       const cud_event = {
         eventName: 'TaskCreated',
         data: {
-          public_id: result.results.rows[0].public_id,
+          publicId: result.results.rows[0].public_id,
           description: result.results.rows[0].description,
-          assigned_public_account_id: result.results.rows[0].assigned_public_account_id,
+          assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,
         }
       }
 
@@ -68,8 +68,8 @@ function closeTask(req, res) {
     const be_event = {
       eventName: 'TaskClosed',
       data: {
-        public_id: result.results.rows[0].public_id,
-        closed_public_account_id: result.results.rows[0].closed_public_account_id,
+        publicId: result.results.rows[0].public_id,
+        closedPublicAccountId: result.results.rows[0].closed_public_account_id,
       }
     }
 
@@ -97,8 +97,8 @@ function shuffleTasks(req, res) {
           const be_event = {
             eventName: 'TaskAssigned',
             data: {
-              public_id: result.results.rows[0].public_id,
-              assigned_public_account_id: result.results.rows[0].assigned_public_account_id,
+              publicId: result.results.rows[0].public_id,
+              assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,
             }
           }
 

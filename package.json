@@ -18,7 +18,8 @@
     "kafkajs": "2.2.4",
     "node-oauth2-server": "2.4.0",
     "npm": "10.5.0",
-    "pg": "8.11.3"
+    "pg": "8.11.3",
+    "protobufjs": "7.2.6"
   },
   "devDependencies": {
     "webpack": "5.90.3",
