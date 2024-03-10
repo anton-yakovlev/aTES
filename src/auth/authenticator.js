@@ -32,6 +32,10 @@ function registerUser(req, res) {
       // -------------------- Produce CUD event -------------------- //
       const event = {
         eventName: 'AccountCreated',
+        eventId: 'ACCOUNT_CREATED',
+        eventVersion: 1,
+        eventTime: Date.now().toString(),
+        eventProducer: 'AUTH_SERVICE',
         data: {
           publicId: response.results.rows[0].public_id,
           email: response.results.rows[0].email,
@@ -70,6 +74,10 @@ function changeUser(req, res) {
         // -------------------- Produce CUD event -------------------- //
         const cud_event = {
           eventName: 'AccountUpdated',
+          eventId: 'ACCOUNT_UPDATED',
+          eventVersion: 1,
+          eventTime: Date.now().toString(),
+          eventProducer: 'AUTH_SERVICE',
           data: {
             publicId: response.results.rows[0].public_id,
             email: response.results.rows[0].email,
@@ -86,7 +94,11 @@ function changeUser(req, res) {
         if (isNewPosition) {
           // -------------------- Produce BE event -------------------- //
           const be_event = {
-            eventName: 'AccountPotionChanged',
+            eventName: 'AccountPositionChanged',
+            eventId: 'ACCOUNT_POSITION_CHANGED',
+            eventVersion: 1,
+            eventTime: Date.now().toString(),
+            eventProducer: 'AUTH_SERVICE',
             data: {
               publicId: response.results.rows[0].public_id,
               position: response.results.rows[0].position,
@@ -114,6 +126,10 @@ function deleteUser(req, res) {
     // -------------------- Produce CUD event -------------------- //
     const event = {
       eventName: 'AccountDeleted',
+      eventId: 'ACCOUNT_DELETED',
+      eventVersion: 1,
+      eventTime: Date.now().toString(),
+      eventProducer: 'AUTH_SERVICE',
       data: {
         publicId: response.results.rows[0].public_id,
       }

@@ -1,5 +1,6 @@
 const protobuf = require('protobufjs');
 let AccountProtobufType;
+const { isValidEvent } = require('../schemas_packages/registry');
 
 // Database imports
 const pgPool = require("./db/pgWrapper.js");
@@ -23,8 +24,8 @@ const kafka = new Kafka({
   brokers: ['localhost:9092'],
 })
 
-const consumerAccountsStream = kafka.consumer({ groupId: 'accounts-stream-group' });
-const consumerAccounts = kafka.consumer({ groupId: 'accounts-group' });
+const consumerAccountsStream = kafka.consumer({ groupId: 'tasks-stream-group' });
+const consumerAccounts = kafka.consumer({ groupId: 'tasks-group' });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -53,21 +54,42 @@ app.listen(port, async () => {
         value: message.value.toString(),
       });
 
-      const decodedEvent = AccountProtobufType.decode(message.value);
+      try {
+        const decodedEvent = AccountProtobufType.decode(message.value);
 
-      if (decodedEvent.eventName === 'AccountCreated') {
-        const { publicId, position } = decodedEvent.data;
-        userService.registerUser(publicId, position, () => {});
-      }
+        if (decodedEvent.eventId === 'ACCOUNT_CREATED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
 
-      if (decodedEvent.eventName === 'AccountDeleted') {
-        const { publicId } = decodedEvent.data;
-        userService.deleteUser(publicId, () => {});
-      }
+          const { publicId, position } = decodedEvent.data;
+          userService.registerUser(publicId, position, () => {});
+        }
 
-      if (decodedEvent.eventName === 'AccountUpdated') {
-        const {publicId, position} = decodedEvent.data;
-        userService.updateUser(publicId, position, () => {});
+        if (decodedEvent.eventId === 'ACCOUNT_DELETED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
+
+          const { publicId } = decodedEvent.data;
+          userService.deleteUser(publicId, () => {});
+        }
+
+        if (decodedEvent.eventId === 'ACCOUNT_UPDATED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
+          
+          const {publicId, position} = decodedEvent.data;
+          userService.updateUser(publicId, position, () => {});
+        }
+      } catch {
+        
+        console.log('Error. Can not decode event');
+        return;
       }
     },
   });

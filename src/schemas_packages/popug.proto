@@ -9,8 +9,12 @@ message AccountData {
 }
 
 message Account {
-  string event_name = 1;
-  AccountData data = 2;
+  string event_id = 1;
+  int32 event_version = 2;
+  string event_name = 3;
+  string event_time = 4;
+  string event_producer = 5;
+  AccountData data = 6;
 }
 
 message TaskData {
@@ -18,9 +22,29 @@ message TaskData {
   string description = 2;
   string assigned_public_account_id = 3;
   string closed_public_account_id = 4;
+  string jiraId = 5;
+  string title = 6;
 }
 
 message Task {
-  string event_name = 1;
-  TaskData data = 2;
+  string event_id = 1;
+  int32 event_version = 2;
+  string event_name = 3;
+  string event_time = 4;
+  string event_producer = 5;
+  TaskData data = 6;
+}
+
+message TransactionData {
+  string public_id = 1;
+  int32 amount = 2;
+}
+
+message Transaction {
+  string event_id = 1;
+  int32 event_version = 2;
+  string event_name = 3;
+  string event_time = 4;
+  string event_producer = 5;
+  TransactionData data = 6;
 }

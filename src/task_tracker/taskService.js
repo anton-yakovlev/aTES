@@ -18,17 +18,21 @@ function createTask(req, res) {
     const randomEmployeeIndex = Math.floor(Math.random() * (employees.length - 1));
 
     const taskData = {
-      description: req.body.description,
+      title: req.body.title,
+      jiraId: req.body.jira_id,
       assigned_public_account_id: employees[randomEmployeeIndex].public_id
     }
 
-    taskDB.createTask(taskData.description, taskData.assigned_public_account_id, (result) => {
+    taskDB.createTask(taskData.title, taskData.jiraId, taskData.assigned_public_account_id, (result) => {
       // -------------------- Produce BE event -------------------- //
       const be_event = {
         eventName: 'TaskCreated',
+        eventId: 'TASK_CREATED',
+        eventVersion: 1,
+        eventTime: Date.now().toString(),
+        eventProducer: 'TASK_SERVICE',
         data: {
           publicId: result.results.rows[0].public_id,
-          description: result.results.rows[0].description,
           assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,
         }
       }
@@ -41,9 +45,14 @@ function createTask(req, res) {
       // -------------------- Produce CUD event -------------------- //
       const cud_event = {
         eventName: 'TaskCreated',
+        eventId: 'TASK_CREATED',
+        eventVersion: 2,
+        eventTime: Date.now().toString(),
+        eventProducer: 'TASK_SERVICE',
         data: {
           publicId: result.results.rows[0].public_id,
-          description: result.results.rows[0].description,
+          title: result.results.rows[0].title,
+          jiraId: result.results.rows[0].jira_id,
           assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,
         }
       }
@@ -67,6 +76,10 @@ function closeTask(req, res) {
     // -------------------- Produce BE event -------------------- //
     const be_event = {
       eventName: 'TaskClosed',
+      eventId: 'TASK_CLOSED',
+      eventVersion: 1,
+      eventTime: Date.now().toString(),
+      eventProducer: 'TASK_SERVICE',
       data: {
         publicId: result.results.rows[0].public_id,
         closedPublicAccountId: result.results.rows[0].closed_public_account_id,
@@ -96,6 +109,10 @@ function shuffleTasks(req, res) {
           // -------------------- Produce BE event -------------------- //
           const be_event = {
             eventName: 'TaskAssigned',
+            eventId: 'TASK_ASSIGNED',
+            eventVersion: 1,
+            eventTime: Date.now().toString(),
+            eventProducer: 'TASK_SERVICE',
             data: {
               publicId: result.results.rows[0].public_id,
               assignedPublicAccountId: result.results.rows[0].assigned_public_account_id,

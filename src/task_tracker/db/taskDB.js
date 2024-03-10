@@ -13,8 +13,8 @@ module.exports = (injectedPgPool) => {
 
 console.log(pgPool);
 
-function createTask(description, assigned_public_account_id, cbFunc) {
-  const query = `INSERT INTO tasks (description, assigned_public_account_id) VALUES ('${description}', '${assigned_public_account_id}') RETURNING *`;
+function createTask(title, jiraId, assigned_public_account_id, cbFunc) {
+  const query = `INSERT INTO tasks (title, jira_id, assigned_public_account_id) VALUES ('${title}', '${jiraId}', '${assigned_public_account_id}') RETURNING *`;
   pgPool.query(query, cbFunc);
 }
 

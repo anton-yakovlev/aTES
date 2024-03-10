@@ -6,6 +6,8 @@
   "scripts": {
     "start-auth": "node src/auth/index.js",
     "start-tracker": "node src/task_tracker/index.js",
+    "start-accounting": "node src/accounting/index.js",
+    "start-analytics": "node src/analytics/index.js",
     "start-client": "NODE_ENV=development webpack serve --mode development"
   },
   "keywords": [],
