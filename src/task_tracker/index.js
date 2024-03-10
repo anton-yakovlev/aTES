@@ -1,3 +1,7 @@
+const protobuf = require('protobufjs');
+let AccountProtobufType;
+const { isValidEvent } = require('../schemas_packages/registry');
+
 // Database imports
 const pgPool = require("./db/pgWrapper.js");
 const userDB = require("./db/userDB.js")(pgPool);
@@ -20,8 +24,8 @@ const kafka = new Kafka({
   brokers: ['localhost:9092'],
 })
 
-const consumerAccountsStream = kafka.consumer({ groupId: 'accounts-stream-group' });
-const consumerAccounts = kafka.consumer({ groupId: 'accounts-group' });
+const consumerAccountsStream = kafka.consumer({ groupId: 'tasks-stream-group' });
+const consumerAccounts = kafka.consumer({ groupId: 'tasks-group' });
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +35,10 @@ const port = 3001;
 
 app.listen(port, async () => {
   console.log(`Task tracker. Listening on port ${port}`);
+
+  protobuf.load('src/schemas_packages/popug.proto').then((root) => {
+    AccountProtobufType = root.lookupType('popug_package.Account');
+  });
 
   await consumerAccountsStream.connect();
   await consumerAccounts.connect();
@@ -46,20 +54,42 @@ app.listen(port, async () => {
         value: message.value.toString(),
       });
 
-      const messageObj = JSON.parse(message.value);
+      try {
+        const decodedEvent = AccountProtobufType.decode(message.value);
 
-      if (messageObj.eventName === 'AccountCreated') {
-        const {public_id, position} = messageObj.data;
-        userService.registerUser(public_id, position);
-      }
+        if (decodedEvent.eventId === 'ACCOUNT_CREATED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
 
-      if (messageObj.eventName === 'AccountDeleted') {
-        userService.deleteUser(messageObj.data.public_id);
-      }
+          const { publicId, position } = decodedEvent.data;
+          userService.registerUser(publicId, position, () => {});
+        }
 
-      if (messageObj.eventName === 'AccountUpdated') {
-        const {public_id, position} = messageObj.data;
-        userService.updateUser(public_id, position);
+        if (decodedEvent.eventId === 'ACCOUNT_DELETED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
+
+          const { publicId } = decodedEvent.data;
+          userService.deleteUser(publicId, () => {});
+        }
+
+        if (decodedEvent.eventId === 'ACCOUNT_UPDATED') {
+          if (!isValidEvent(decodedEvent)) {
+            console.error(`Event ${decodedEvent.eventId} is not Valid`);
+            return;
+          }
+          
+          const {publicId, position} = decodedEvent.data;
+          userService.updateUser(publicId, position, () => {});
+        }
+      } catch {
+        
+        console.log('Error. Can not decode event');
+        return;
       }
     },
   });

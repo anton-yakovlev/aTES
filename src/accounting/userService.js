@@ -6,7 +6,7 @@ module.exports = (injectedUserDB) => {
   return {
     registerUser,
     deleteUser,
-    updateUser
+    updateUser,
   };
 };
 

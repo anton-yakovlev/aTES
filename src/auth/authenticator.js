@@ -32,14 +32,18 @@ function registerUser(req, res) {
       // -------------------- Produce CUD event -------------------- //
       const event = {
         eventName: 'AccountCreated',
+        eventId: 'ACCOUNT_CREATED',
+        eventVersion: 1,
+        eventTime: Date.now().toString(),
+        eventProducer: 'AUTH_SERVICE',
         data: {
-          public_id: response.results.rows[0].public_id,
+          publicId: response.results.rows[0].public_id,
           email: response.results.rows[0].email,
           fullname: response.results.rows[0].fullname,
           position: response.results.rows[0].position,
         }
       }
-
+      
       console.log({ event: JSON.stringify(event), topic: 'accounts-stream' });
 
       producer.call({ event, topic: 'accounts-stream'});
@@ -70,8 +74,12 @@ function changeUser(req, res) {
         // -------------------- Produce CUD event -------------------- //
         const cud_event = {
           eventName: 'AccountUpdated',
+          eventId: 'ACCOUNT_UPDATED',
+          eventVersion: 1,
+          eventTime: Date.now().toString(),
+          eventProducer: 'AUTH_SERVICE',
           data: {
-            public_id: response.results.rows[0].public_id,
+            publicId: response.results.rows[0].public_id,
             email: response.results.rows[0].email,
             fullname: response.results.rows[0].fullname,
             position: response.results.rows[0].position,
@@ -86,10 +94,14 @@ function changeUser(req, res) {
         if (isNewPosition) {
           // -------------------- Produce BE event -------------------- //
           const be_event = {
-            eventName: 'AccountPotionChanged',
+            eventName: 'AccountPositionChanged',
+            eventId: 'ACCOUNT_POSITION_CHANGED',
+            eventVersion: 1,
+            eventTime: Date.now().toString(),
+            eventProducer: 'AUTH_SERVICE',
             data: {
-                public_id: response.results.rows[0].public_id,
-                position: response.results.rows[0].position,
+              publicId: response.results.rows[0].public_id,
+              position: response.results.rows[0].position,
             }
           };
 
@@ -114,8 +126,12 @@ function deleteUser(req, res) {
     // -------------------- Produce CUD event -------------------- //
     const event = {
       eventName: 'AccountDeleted',
+      eventId: 'ACCOUNT_DELETED',
+      eventVersion: 1,
+      eventTime: Date.now().toString(),
+      eventProducer: 'AUTH_SERVICE',
       data: {
-        public_id: response.results.rows[0].public_id,
+        publicId: response.results.rows[0].public_id,
       }
     }
 

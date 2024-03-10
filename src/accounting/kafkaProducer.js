@@ -10,10 +10,10 @@ const producer = kafka.producer()
 
 async function call ({topic, event}) {
   const rootProtobuf = await protobuf.load('src/schemas_packages/popug.proto');
-  const TaskProtobufType = rootProtobuf.lookupType('popug_package.Task');
+  const TransactionProtobufType = rootProtobuf.lookupType('popug_package.Transaction');
 
-  const bufferedEvent = TaskProtobufType.create(event);
-  const encodedEvent = TaskProtobufType.encode(bufferedEvent).finish();
+  const bufferedEvent = TransactionProtobufType.create(event);
+  const encodedEvent = TransactionProtobufType.encode(bufferedEvent).finish();
 
   await producer.connect()
   await producer.send({

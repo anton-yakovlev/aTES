@@ -1,4 +1,5 @@
-const { Kafka } = require('kafkajs')
+const { Kafka } = require('kafkajs');
+const protobuf = require('protobufjs');
 
 const kafka = new Kafka({
   clientId: 'popug-auth',
@@ -8,11 +9,17 @@ const kafka = new Kafka({
 const producer = kafka.producer()
 
 async function call ({topic, event}) {
+  const rootProtobuf = await protobuf.load('src/schemas_packages/popug.proto');
+  const AccountProtobufType = rootProtobuf.lookupType('popug_package.Account');
+
+  const bufferedEvent = AccountProtobufType.create(event);
+  const encodedEvent = AccountProtobufType.encode(bufferedEvent).finish();
+
   await producer.connect()
   await producer.send({
     topic: topic,
     messages: [
-      { value: JSON.stringify(event) },
+      { value: encodedEvent },
     ],
   })
   await producer.disconnect()
